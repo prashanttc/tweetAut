@@ -13,7 +13,7 @@ function isAuthorized(req: express.Request): boolean {
   return req.query.key === CRON_SECRET;
 }
 
-app.get("/cron/morning", async (req, res) => {
+app.get("/cron/morning", async (req: any, res: any) => {
   if (!isAuthorized(req)) return res.status(401).send("Unauthorized");
   try {
     await MorningAgent();

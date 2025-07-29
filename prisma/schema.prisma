@@ -13,7 +13,16 @@ model UsedTopics {
   source         String
   sourceUrl      String
   contextSummary String?
+  personalAngle  String?
   createdAt      DateTime @default(now())
 
   @@index([createdAt])
+}
+
+model Tweets{
+  id              String    @id @default(uuid())
+  content         String
+  createdAt      DateTime @default(now())
+  postUrl         String?
+
 }

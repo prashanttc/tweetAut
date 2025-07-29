@@ -1,6 +1,7 @@
 import { GenerateTweet, getGeminiTopicPick } from "../lib/ai";
 import { CheckTopic } from "../lib/dbActions";
 import { fetchHNTopics, fetchRedditTopics } from "../lib/fetchTopics";
+import { PostAgent } from "./postAgent";
 
 export async function MorningAgent() {
   const [reddit, hn] = await Promise.all([
@@ -21,5 +22,6 @@ export async function MorningAgent() {
   );
   const selected = await getGeminiTopicPick(unusedTopics);
   const tweet = await GenerateTweet(selected);
-  return tweet;
+  const post = await PostAgent({ content: tweet, topic: selected });
+  return post;
 }
