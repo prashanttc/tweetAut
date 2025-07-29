@@ -1,0 +1,44 @@
+{
+  "name": "automation",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "nodemon --watch './' --ext ts --exec tsx index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "morningAgent": "ts-node runners/morningRunner.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@prisma/client": "^6.11.1",
+    "@resvg/resvg-js": "^2.6.2",
+    "@supabase/supabase-js": "^2.51.0",
+    "axios": "^1.10.0",
+    "cheerio": "^1.1.0",
+    "dotenv": "^17.2.0",
+    "figma-api": "^2.0.2-beta",
+    "figma-js": "^1.16.1-0",
+    "grammy": "^1.37.0",
+    "node-fetch": "^3.3.2",
+    "openai": "^5.9.0",
+    "prisma": "^6.11.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "satori": "^0.15.2",
+    "snoowrap": "^1.23.0",
+    "twitter-api-v2": "^1.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.14",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
+  }
+}
