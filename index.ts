@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import { prisma } from "./lib/prisma";
 import { MorningAgent } from "./agents/morningTopicAgent";
+import { ShitPostingAgent } from "./agents/ShitPostingAgent";
 
 dotenv.config();
 
@@ -18,33 +19,22 @@ app.get("/cron/morning", async (req: any, res: any) => {
   try {
     await MorningAgent();
     res.status(204).end();
-   } catch (err) {
+  } catch (err) {
     console.error("❌ MorningAgent error:", err);
     res.status(500).send("Error in MorningAgent");
   }
 });
 
-// app.get("/cron/afternoon", async (req, res) => {
-//   if (!isAuthorized(req)) return res.status(401).send("Unauthorized");
-//   try {
-//     await AfternoonAgent();
-//     res.send("✅ Afternoon tweet posted");
-//   } catch (err) {
-//     console.error("❌ AfternoonAgent error:", err);
-//     res.status(500).send("Error in AfternoonAgent");
-//   }
-// });
-
-// app.get("/cron/evening", async (req, res) => {
-//   if (!isAuthorized(req)) return res.status(401).send("Unauthorized");
-//   try {
-//     await EveningAgent();
-//     res.send("✅ Evening tweet posted");
-//   } catch (err) {
-//     console.error("❌ EveningAgent error:", err);
-//     res.status(500).send("Error in EveningAgent");
-//   }
-// });
+app.get("/cron/evening", async (req: any, res: any) => {
+  if (!isAuthorized(req)) return res.status(401).send("Unauthorized");
+  try {
+    await ShitPostingAgent();
+    res.status(204).end();
+  } catch (err) {
+    console.error("❌ EveningAgent error:", err);
+    res.status(500).send("Error in EveningAgent");
+  }
+});
 
 process.on("SIGINT", async () => {
   console.log("\nGracefully shutting down...");

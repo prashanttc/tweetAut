@@ -13,8 +13,8 @@ const reddit = new snoowrap({
   password: process.env.REDDIT_PASSWORD!,
 });
 
-export async function fetchRedditTopics(
-  subreddits = ["futurology", "technology", "TwoXChromosomes"]
+export async function fetchTechTopics(
+  subreddits = ["futurology", "technology", "webdev", "programming", "MachineLearning", "coding"]
 ): Promise<Topic[]> {
   const posts: Topic[] = [];
 
@@ -32,18 +32,24 @@ export async function fetchRedditTopics(
 
   return posts;
 }
-// fetchHNTopics
-export async function fetchHNTopics(): Promise<Topic[]> {
-  const res = await fetch(
-    "https://hn.algolia.com/api/v1/search?tags=story"
-  );
-  const data = await res.json();
 
-  return data.hits.map((hit: any) => ({
-    rawTopic: hit.title,
-    source: "Hacker News",
-    sourceUrl:
-      hit.url || `https://news.ycombinator.com/item?id=${hit.objectID}`,
-    contextSummary: hit.story_text || "",
-  }));
+
+export async function fetchShitpostTopics(
+  subreddits = ["ProgrammerHumor", "techsupportgore", "ITcareerquestions", "girlsgonewired", "technicallythetruth", "facepalm"]
+): Promise<Topic[]> {
+  const posts: Topic[] = [];
+
+  for (const sub of subreddits) {
+    const top = await reddit.getSubreddit(sub).getHot({ limit: 3 });
+    top.forEach((post) => {
+      posts.push({
+        rawTopic: post.title,
+        source: `Reddit /r/${sub}`,
+        sourceUrl: `https://reddit.com${post.permalink}`,
+        contextSummary: post.selftext?.slice(0, 280) || "",
+      });
+    });
+  }
+
+  return posts;
 }

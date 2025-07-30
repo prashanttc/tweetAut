@@ -5,7 +5,7 @@ export async function CheckTopic() {
   try {
   const list = await prisma.usedTopics.findMany({
     select:{
-        rawTopic:true
+        sourceUrl:true
     }
   })
   return list;
@@ -14,12 +14,12 @@ export async function CheckTopic() {
   }
 }
 
-export async function saveTweet(tweet:string) {
+export async function saveTweet({tweet,url}:{tweet:string;url:string}) {
    try {
      const Tweet = await prisma.tweets.create({
       data:{
         content:tweet,
-        postUrl:"",
+        postUrl:url,
       }
      })
      if(!Tweet){

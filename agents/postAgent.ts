@@ -19,8 +19,9 @@ export async function PostAgent({content,topic}:{content:string;topic:Topic}): P
       "✅ Tweet posted:",
       `https://twitter.com/i/web/status/${tweet.data.id}`
     );
+    const url = `https://twitter.com/i/web/status/${tweet.data.id}`
     await saveTopic(topic)
-    await saveTweet(tweet.data.text);
+    await saveTweet({tweet:tweet.data.text,url:url});
   } catch (err) {
     console.error("❌ Failed to post tweet:", err);
   }
