@@ -1,7 +1,9 @@
 import TelegramBot from 'node-telegram-bot-api';
 import { MorningAgent } from '../agents/morningTopicAgent';
 import { ShitPostingAgent } from '../agents/ShitPostingAgent';
+import dotenv from "dotenv";
 
+dotenv.config();
 const token = process.env.TELEGRAM_BOT_TOKEN!;
 const bot = new TelegramBot(token, { polling: true });
 const ADMIN_ID = process.env.TELEGRAM_ADMIN_ID!;
@@ -9,7 +11,7 @@ const ADMIN_ID = process.env.TELEGRAM_ADMIN_ID!;
 function isAdmin(id: number | undefined): boolean {
   return id?.toString() === ADMIN_ID;
 }
-
+ console.log("running your tweet bot")
 // ✅ /start
 bot.onText(/\/start/, (msg) => {
   if (!isAdmin(msg.from?.id)) return;

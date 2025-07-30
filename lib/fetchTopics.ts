@@ -14,10 +14,10 @@ const reddit = new snoowrap({
 });
 
 export async function fetchTechTopics(
-  subreddits = ["futurology", "technology", "webdev", "programming", "MachineLearning", "coding"]
+  subreddits = ["AskReddit", "technology", "webdev", "programming", "cscareerquestions", "coding"]
 ): Promise<Topic[]> {
   const posts: Topic[] = [];
-
+  let index =1;
   for (const sub of subreddits) {
     const top = await reddit.getSubreddit(sub).getNew({ limit: 3 });
     top.forEach((post) => {
