@@ -17,8 +17,8 @@ app.get("/cron/morning", async (req: any, res: any) => {
   if (!isAuthorized(req)) return res.status(401).send("Unauthorized");
   try {
     await MorningAgent();
-    res.send("✅ Morning tweet posted");
-  } catch (err) {
+    res.status(204).end();
+   } catch (err) {
     console.error("❌ MorningAgent error:", err);
     res.status(500).send("Error in MorningAgent");
   }

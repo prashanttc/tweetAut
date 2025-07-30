@@ -23,5 +23,5 @@ export async function MorningAgent() {
   const selected = await getGeminiTopicPick(unusedTopics);
   const tweet = await GenerateTweet(selected);
   const post = await PostAgent({ content: tweet, topic: selected });
-  return post;
+  return ;
 }
