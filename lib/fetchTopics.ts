@@ -25,7 +25,7 @@ export async function fetchTechTopics(
   const posts: Topic[] = [];
   let index = 1;
   for (const sub of subreddits) {
-    const top = await reddit.getSubreddit(sub).getNew({ limit: 3 });
+    const top = await reddit.getSubreddit(sub).getTop({ limit:1});
     top.forEach((post) => {
       posts.push({
         rawTopic: post.title,
@@ -42,7 +42,6 @@ export async function fetchTechTopics(
 export async function fetchShitpostTopics(
   subreddits = [
     "ProgrammerHumor",
-    "AskReddit",
     "ITcareerquestions",
     "girlsgonewired",
     "technicallythetruth",
