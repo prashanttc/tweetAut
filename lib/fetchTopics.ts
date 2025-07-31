@@ -14,10 +14,16 @@ const reddit = new snoowrap({
 });
 
 export async function fetchTechTopics(
-  subreddits = ["AskReddit", "technology", "webdev", "programming", "cscareerquestions", "coding"]
+  subreddits = [
+    "technology",
+    "webdev",
+    "programming",
+    "cscareerquestions",
+    "coding",
+  ]
 ): Promise<Topic[]> {
   const posts: Topic[] = [];
-  let index =1;
+  let index = 1;
   for (const sub of subreddits) {
     const top = await reddit.getSubreddit(sub).getNew({ limit: 3 });
     top.forEach((post) => {
@@ -33,14 +39,20 @@ export async function fetchTechTopics(
   return posts;
 }
 
-
 export async function fetchShitpostTopics(
-  subreddits = ["ProgrammerHumor", "techsupportgore", "ITcareerquestions", "girlsgonewired", "technicallythetruth", "facepalm"]
+  subreddits = [
+    "ProgrammerHumor",
+    "AskReddit",
+    "ITcareerquestions",
+    "girlsgonewired",
+    "technicallythetruth",
+    "facepalm",
+  ]
 ): Promise<Topic[]> {
   const posts: Topic[] = [];
-
+  let index = 1;
   for (const sub of subreddits) {
-    const top = await reddit.getSubreddit(sub).getHot({ limit: 3 });
+    const top = await reddit.getSubreddit(sub).getNew({ limit: 3 });
     top.forEach((post) => {
       posts.push({
         rawTopic: post.title,

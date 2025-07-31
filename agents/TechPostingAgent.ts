@@ -3,7 +3,7 @@ import { CheckTopic } from "../lib/dbActions";
 import { fetchTechTopics } from "../lib/fetchTopics";
 import { PostAgent } from "./postAgent";
 
-export async function MorningAgent() {
+export async function TechPostingAgent() {
   const reddit = await fetchTechTopics();
   const allTopics = [...reddit].slice(0, 20);
 
@@ -19,6 +19,6 @@ export async function MorningAgent() {
   const selected = await pickTopic(titles);
   const selectedTopic = unusedTopics[selected];
   const tweet = await TechyTweets(selectedTopic);
-  const post = await PostAgent({ content: tweet, topic: selectedTopic });
+   const post = await PostAgent({ content: tweet, topic: selectedTopic });
   return;
 }
