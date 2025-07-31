@@ -3,6 +3,7 @@ import TelegramBot from 'node-telegram-bot-api';
 import { MorningAgent } from '../agents/morningTopicAgent';
 import { ShitPostingAgent } from '../agents/ShitPostingAgent';
 import dotenv from "dotenv";
+import { prisma } from '../lib/prisma';
 
 dotenv.config();
 
@@ -33,7 +34,7 @@ bot.onText(/\/help/, (msg) => {
   if (!isAdmin(msg.from?.id)) return;
   bot.sendMessage(
     msg.chat.id,
-    `📚 *Bot Commands Reference*:\n\n🛠️ *Tweet Controls:*\n• /post_morning – Post tech tweet manually\n• /post_evening – Post shitpost manually\n\n🔍 *Info:*\n• /start – Overview of what I do\n• /help – Show this help menu\n\n🔐 *Note:* Only the authorized admin can use these commands.`,
+    `📚 *Bot Commands Reference*:\n\n🛠️ *Tweet :*\n• /post_morning – Post tech tweet manually\n• /post_evening – Post shitpost manually\n\n🔍• /logs – see all posted tweets\n• *Info:*\n• /start – Overview of what I do\n• /help – Show this help menu\n\n 🔐 *Note:* Only the authorized admin can use these commands.`,
     { parse_mode: 'Markdown' }
   );
 });
@@ -59,4 +60,31 @@ bot.onText(/\/help/, (msg) => {
       bot.sendMessage(msg.chat.id, `❌ Error: ${err.message}`);
     }
   });
+
+bot.onText(/\/logs/, async (msg) => {
+  if (!isAdmin(msg.from?.id)) return;
+  const chatId = msg.chat.id;
+
+  try {
+    const logs = await prisma.tweets.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+    });
+
+    if (logs.length === 0) {
+      bot.sendMessage(chatId, "📭 No logs found.");
+      return;
+    }
+
+    let message = `🧾 *Recent Tweet Logs:*\n\n`;
+    logs.forEach(log => {
+      message += `🕒 ${new Date(log.createdAt).toLocaleString()}\n📄 ${log.content}\n\n`;
+    });
+
+    bot.sendMessage(chatId, message, { parse_mode: 'Markdown' });
+  } catch (err: any) {
+    bot.sendMessage(chatId, `❌ Failed to fetch logs: ${err.message}`);
+  }
+});
+
 }
