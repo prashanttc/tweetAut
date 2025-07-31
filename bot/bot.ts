@@ -10,7 +10,7 @@ dotenv.config();
 export function startTelegramBot() {
   const token = process.env.TELEGRAM_BOT_TOKEN!;
   const bot = new TelegramBot(token, { polling: true });
-const ADMIN_IDS = process.env.TELEGRAM_ADMIN_IDS!.split(',').map(id => id.trim());
+const ADMIN_IDS = process.env.TELEGRAM_ADMIN_ID!.split(',').map(id => id.trim());
 
 function isAdmin(id: number | undefined): boolean {
   return id !== undefined && ADMIN_IDS.includes(id.toString());
