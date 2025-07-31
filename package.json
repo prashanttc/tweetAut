@@ -4,7 +4,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon --watch './' --ext ts --exec tsx bot/bot.ts index.ts",
+    "start": "nodemon --watch './' --ext ts --exec tsx index.ts",
+    "bot": "nodemon --watch './' --ext ts --exec tsx bot/bot.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

@@ -1,4 +1,5 @@
 import express from "express";
+import "./bot/bot"
 import dotenv from "dotenv";
 import { prisma } from "./lib/prisma";
 import { MorningAgent } from "./agents/morningTopicAgent";
