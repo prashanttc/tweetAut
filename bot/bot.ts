@@ -28,7 +28,7 @@ export function startTelegramBot() {
 
     bot.sendMessage(
       chatId,
-      `👋 Hey ${name}!\n\nI'm your *Tweet Automation Bot* – managing scheduled tweets for your account.\n\nHere’s what I can do:\n\n🕒 Auto-post tweets at:\n• 10 AM – Tech topics\n• 8 PM – Shitposts\n\n⚙️ You can also manually control me:\n• /posttech – Post tech tweet now\n• /postshit – Post shitpost now\n• /help – View all commands\n\n_Only the admin can access this bot._`,
+      `👋 Hey ${name}!\n\nI'm your *Tweet Automation Bot* – managing scheduled tweets for your account.\n\nHere’s what I can do:\n\n🕒 Auto-post tweets at:\n• 10 AM and 8 PM – Tech topics\n• 4 PM – Shitposts\n\n⚙️ You can also manually control me:\n• /posttech – Post tech tweet now\n• /postshit – Post shitpost now\n• /help – View all commands\n\n_Only the admin can access this bot._`,
       { parse_mode: "Markdown" }
     );
   });

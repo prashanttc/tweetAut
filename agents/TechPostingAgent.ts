@@ -4,8 +4,8 @@ import { fetchTechTopics } from "../lib/fetchTopics";
 import { PostAgent } from "./postAgent";
 
 export async function TechPostingAgent() {
-  const reddit = await fetchTechTopics();
-  const allTopics = [...reddit].slice(0, 20);
+    const reddit = await fetchTechTopics();
+    const allTopics = [...reddit].slice(0, 20);
 
   if (allTopics.length === 0) {
     throw new Error("No topics fetched.");
@@ -19,6 +19,6 @@ export async function TechPostingAgent() {
   const selected = await pickTopic(titles);
   const selectedTopic = unusedTopics[selected];
   const tweet = await TechyTweets(selectedTopic);
-   const post = await PostAgent({ content: tweet, topic: selectedTopic });
+  const post = await PostAgent({ content: tweet, topic: selectedTopic });
   return;
 }
