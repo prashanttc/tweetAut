@@ -9,25 +9,34 @@ dotenv.config();
 export function startTelegramBot() {
   const token = process.env.TELEGRAM_BOT_TOKEN!;
   const bot = new TelegramBot(token, { polling: true });
-  const ADMIN_ID = process.env.TELEGRAM_ADMIN_ID!;
+const ADMIN_IDS = process.env.TELEGRAM_ADMIN_IDS!.split(',').map(id => id.trim());
 
-  function isAdmin(id: number | undefined): boolean {
-    return id?.toString() === ADMIN_ID;
-  }
+function isAdmin(id: number | undefined): boolean {
+  return id !== undefined && ADMIN_IDS.includes(id.toString());
+}
 
   console.log("🤖 Telegram bot started");
 
-  bot.onText(/\/start/, (msg) => {
-    if (!isAdmin(msg.from?.id)) return;
-    const chatId = msg.chat.id;
-    const name = msg.from?.first_name || "there";
-    bot.sendMessage(chatId, `👋 Hey ${name}! I'm your Tweet Automation Bot...`, { parse_mode: 'Markdown' });
-  });
+bot.onText(/\/start/, (msg) => {
+  if (!isAdmin(msg.from?.id)) return;
+  const chatId = msg.chat.id;
+  const name = msg.from?.first_name || "there";
 
-  bot.onText(/\/help/, (msg) => {
-    if (!isAdmin(msg.from?.id)) return;
-    bot.sendMessage(msg.chat.id, `📚 *Bot Commands Reference*`, { parse_mode: 'Markdown' });
-  });
+  bot.sendMessage(
+    chatId,
+    `👋 Hey ${name}!\n\nI'm your *Tweet Automation Bot* – managing scheduled tweets for your account.\n\nHere’s what I can do:\n\n🕒 Auto-post tweets at:\n• 10 AM – Tech topics\n• 8 PM – Shitposts\n\n⚙️ You can also manually control me:\n• /post_morning – Post tech tweet now\n• /post_evening – Post shitpost now\n• /help – View all commands\n\n_Only the admin can access this bot._`,
+    { parse_mode: 'Markdown' }
+  );
+});
+
+bot.onText(/\/help/, (msg) => {
+  if (!isAdmin(msg.from?.id)) return;
+  bot.sendMessage(
+    msg.chat.id,
+    `📚 *Bot Commands Reference*:\n\n🛠️ *Tweet Controls:*\n• /post_morning – Post tech tweet manually\n• /post_evening – Post shitpost manually\n\n🔍 *Info:*\n• /start – Overview of what I do\n• /help – Show this help menu\n\n🔐 *Note:* Only the authorized admin can use these commands.`,
+    { parse_mode: 'Markdown' }
+  );
+});
 
   bot.onText(/\/post_morning/, async (msg) => {
     if (!isAdmin(msg.from?.id)) return;

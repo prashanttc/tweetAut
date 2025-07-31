@@ -15,7 +15,6 @@ export async function ShitPostingAgent() {
   const selected = await pickTopic(titles);
   const selectedTopic = unusedTopics[selected];
   const tweet = await ShitPostingTweets(selectedTopic);
-  console.log("sss",tweet)
-  // const post = await PostAgent({ content: tweet, topic: selected });
+  const post = await PostAgent({ content: tweet, topic: selectedTopic });
   return;
 }

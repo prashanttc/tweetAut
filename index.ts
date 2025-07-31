@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import { prisma } from "./lib/prisma";
 import { MorningAgent } from "./agents/morningTopicAgent";
 import { ShitPostingAgent } from "./agents/ShitPostingAgent";
-import { startTelegramBot } from "./bot/bot"; // ✅ import your bot function
+import { startTelegramBot } from "./bot/bot";
 
 dotenv.config();
 
@@ -12,7 +12,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const CRON_SECRET = process.env.CRON_SECRET;
 
-startTelegramBot(); // ✅ Run it once
+// startTelegramBot(); 
 
 function isAuthorized(req: express.Request): boolean {
   return req.query.key === CRON_SECRET;

@@ -19,6 +19,6 @@ export async function MorningAgent() {
   const selected = await pickTopic(titles);
   const selectedTopic = unusedTopics[selected];
   const tweet = await TechyTweets(selectedTopic);
-  // const post = await PostAgent({ content: tweet, topic: selectedTopic });
+  const post = await PostAgent({ content: tweet, topic: selectedTopic });
   return;
 }
