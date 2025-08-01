@@ -1,4 +1,3 @@
-
 import express from "express";
 import dotenv from "dotenv";
 import { prisma } from "./lib/prisma";
@@ -11,7 +10,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 const CRON_SECRET = process.env.CRON_SECRET;
- startTelegramBot(); 
+startTelegramBot();
 
 function isAuthorized(req: express.Request): boolean {
   return req.query.key === CRON_SECRET;
@@ -48,4 +47,3 @@ process.on("SIGINT", async () => {
 app.listen(PORT, () => {
   console.log(`🚀 Server listening on http://localhost:${PORT}`);
 });
-
