@@ -13,16 +13,16 @@ model UsedTopics {
   source         String
   sourceUrl      String
   contextSummary String?
-  personalAngle  String?
   createdAt      DateTime @default(now())
-
-  @@index([createdAt])
+  personalAngle  String?
+  tweet          Tweet?
 }
 
-model Tweets{
-  id              String    @id @default(uuid())
-  content         String
-  createdAt      DateTime @default(now())
-  postUrl         String?
-
+model Tweet {
+  id          String     @id @default(uuid())
+  content     String
+  createdAt   DateTime   @default(now())
+  postUrl     String?
+  usedTopicId String     @unique
+  usedTopic   UsedTopics @relation(fields: [usedTopicId], references: [id])
 }

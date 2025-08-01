@@ -4,7 +4,11 @@ import OpenAI from "openai";
 
 dotenv.config();
 
-async function withRetry<T>(fn: () => Promise<T>, retries = 3, delay = 500): Promise<T> {
+async function withRetry<T>(
+  fn: () => Promise<T>,
+  retries = 3,
+  delay = 500
+): Promise<T> {
   let attempt = 0;
   while (true) {
     try {
@@ -27,19 +31,27 @@ export async function pickTopic(titles: string[]): Promise<number> {
     const response = await client.chat.completions.create({
       model: "meta-llama/Meta-Llama-3.1-405B-Instruct",
       messages: [
-        { role: "system", content: "You are a Twitter growth hacker assistant." },
-        { role: "user", content: `
+        {
+          role: "system",
+          content:
+            "You are a creative assistant for viral Twitter content. Your job is to select the most unique and untapped topic each time, avoiding any repetition.",
+        },
+        {
+          role: "user",
+          content: `
 Pick the most tweetable title from this list. Consider virality, emotion, novelty, and curiosity.
 
 Titles:
 ${titles.map((t, i) => `${i + 1}. ${t}`).join("\n")}
 
-**Return only the number** corresponding to the best title (for example, "3"), with no extra text.
-        ` },
+**Return only the number** corresponding to the best title (e.g., "3"). 
+Very important: Avoid picking the same title you've picked before. Prioritize variety. If two are similar, choose the fresher one.
+`,
+        },
       ],
     });
 
-    const raw = response.choices?.[0]?.message?.content?.trim() || '';
+    const raw = response.choices?.[0]?.message?.content?.trim() || "";
     const idx = parseInt(raw, 10) - 1;
     if (isNaN(idx) || idx < 0 || idx >= titles.length) {
       throw new Error(`Invalid index returned by model: \"${raw}\"`);
@@ -55,7 +67,7 @@ export async function TechyTweets(topic: Topic): Promise<string> {
     baseURL: "https://api.studio.nebius.com/v1/",
     apiKey: process.env.NEBIUS_API_KEY!,
   });
-const prompt = `
+  const prompt = `
 You are Tanishka — a final-year computer science student in India, focused on your final project and preparing for job interviews. You care about real-world tech trends and how they affect students like you starting their careers.
 
 Write a clear, thoughtful tweet reacting to this topic: "${topic.rawTopic}"
@@ -75,7 +87,11 @@ Speak like a smart, grounded student who is learning, observing, and thinking se
     const response = await client.chat.completions.create({
       model: "meta-llama/Meta-Llama-3.1-405B-Instruct",
       messages: [
-        { role: "system", content: "You are a gen z , viral and smart final-year female CS student who tweets." },
+        {
+          role: "system",
+          content:
+            "You are a gen z , viral and smart final-year female CS student who tweets.",
+        },
         { role: "user", content: prompt },
       ],
       temperature: 0.6,
@@ -96,7 +112,7 @@ export async function ShitPostingTweets(topic: Topic): Promise<string> {
     apiKey: process.env.NEBIUS_API_KEY!,
   });
 
-const prompt = `
+  const prompt = `
 You are tanishka — a sharp, confident Gen Z girl who tweets with quiet attitude and clever honesty. You post casual shitposts with a modern, slightly girly edge — nothing childish, no fake deep vibes.
 
 Your task: Write **one** tweet (under 280 chars) reacting to the topic below. It should:
@@ -109,12 +125,14 @@ Topic: "${topic.rawTopic}"
 Style: Chill, modern, a bit ironic. Use casual punctuation. Max 1–2 emojis. No hashtags, no deep life lessons.
 `;
 
-
   const tweet = await withRetry(async () => {
     const response = await client.chat.completions.create({
       model: "meta-llama/Meta-Llama-3.1-405B-Instruct",
       messages: [
-        { role: "system", content: "You are a Gen Z, viral and authentic tweet‑writer." },
+        {
+          role: "system",
+          content: "You are a Gen Z, viral and authentic tweet‑writer.",
+        },
         { role: "user", content: prompt },
       ],
       temperature: 0.8,

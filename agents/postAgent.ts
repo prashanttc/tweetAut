@@ -12,16 +12,22 @@ const client = new TwitterApi({
   accessSecret: process.env.TWITTER_ACCESS_TOKEN_SECRET!,
 });
 
-export async function PostAgent({content,topic}:{content:string;topic:Topic}): Promise<void> {
+export async function PostAgent({
+  content,
+  topic,
+}: {
+  content: string;
+  topic: Topic;
+}): Promise<void> {
   try {
     const tweet = await client.v2.tweet(content);
     console.log(
       "✅ Tweet posted:",
       `https://twitter.com/i/web/status/${tweet.data.id}`
     );
-    const url = `https://twitter.com/i/web/status/${tweet.data.id}`
-    await saveTopic(topic)
-    await saveTweet({tweet:tweet.data.text,url:url});
+    const url = `https://twitter.com/i/web/status/${tweet.data.id}`;
+    const topicId = await saveTopic(topic);
+    await saveTweet({ tweet: tweet.data.text, url: url, id: topicId });
   } catch (err) {
     console.error("❌ Failed to post tweet:", err);
   }
