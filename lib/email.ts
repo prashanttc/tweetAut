@@ -10,8 +10,8 @@ export async function sendEmailNotification(
   status: "posted" | "failed"
 ) {
   await resend.emails.send({
-    from: "Tweet Bot",
-    to: ["tanishkabgt@gmail.com"],
+from: "onboarding@resend.dev",
+    to: "tanishka.bgt@gmail.com",
     subject: `Tweet ${status === "posted" ? "✅ Posted" : "❌ Failed"}`,
     html: `
       <h2>Tweet ${status === "posted" ? "was successfully posted" : "failed to post"}.</h2>

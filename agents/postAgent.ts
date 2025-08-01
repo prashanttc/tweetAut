@@ -29,9 +29,9 @@ export async function PostAgent({
     const url = `https://twitter.com/i/web/status/${tweet.data.id}`;
     const topicId = await saveTopic(topic);
     await saveTweet({ tweet: tweet.data.text, url: url, id: topicId });
-    sendEmailNotification(tweet.data.text, "posted");
+    await sendEmailNotification(tweet.data.text, "posted");
   } catch (err) {
     console.error("❌ Failed to post tweet:", err);
-    sendEmailNotification("failed to post tweer", "failed");
+    await sendEmailNotification("failed to post tweer", "failed");
   }
 }
