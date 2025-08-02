@@ -30,8 +30,9 @@ export async function PostAgent({
     const topicId = await saveTopic(topic);
     await saveTweet({ tweet: tweet.data.text, url: url, id: topicId });
     await sendEmailNotification(tweet.data.text, "posted");
+    return;
   } catch (err) {
-    console.error("❌ Failed to post tweet:", err);
+    console.error("❌ Failed to post tweet:");
     await sendEmailNotification("failed to post tweer", "failed");
   }
 }
