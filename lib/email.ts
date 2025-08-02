@@ -11,7 +11,7 @@ export async function sendEmailNotification(
   try {
     await resend.emails.send({
       from: "onboarding@resend.dev",
-      to: "tanishka.bgt@gmail.com",
+      to: "prashantchouhan711@gmail.com",
       subject: `Tweet ${status === "posted" ? "✅ Posted" : "❌ Failed"}`,
       html: `
         <h2>Tweet ${status === "posted" ? "was successfully posted" : "failed to post"}.</h2>
