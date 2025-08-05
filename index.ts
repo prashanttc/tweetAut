@@ -4,13 +4,14 @@ import { prisma } from "./lib/prisma";
 import { TechPostingAgent } from "./agents/TechPostingAgent";
 import { ShitPostingAgent } from "./agents/ShitPostingAgent";
 import { startTelegramBot } from "./bot/bot";
+import { ThreadAgent } from "./agents/ThreadAgent";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const CRON_SECRET = process.env.CRON_SECRET;
- startTelegramBot();
+startTelegramBot();
 
 function isAuthorized(req: express.Request): boolean {
   return req.query.key === CRON_SECRET;
@@ -37,6 +38,16 @@ app.get("/cron/evening", async (req: any, res: any) => {
     res.status(500).send("Error in EveningAgent");
   }
 });
+app.get("/cron/thread", async (req: any, res: any) => {
+  if (!isAuthorized(req)) return res.status(401).send("Unauthorized");
+  try {
+    await ThreadAgent();
+    res.status(204).end();
+  } catch (err) {
+    console.error("❌ EveningAgent error:", err);
+    res.status(500).send("Error in EveningAgent");
+  }
+});
 
 process.on("SIGINT", async () => {
   console.log("\nGracefully shutting down...");
@@ -46,5 +57,4 @@ process.on("SIGINT", async () => {
 
 app.listen(PORT, () => {
   console.log(`🚀 Server listening on http://localhost:${PORT}`);
-
 });

@@ -6,6 +6,7 @@ export async function CheckTopic() {
     const list = await prisma.usedTopics.findMany({
       select: {
         sourceUrl: true,
+        rawTopic:true
       },
     });
     return list;

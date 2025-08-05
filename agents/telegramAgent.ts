@@ -28,5 +28,6 @@ export async function GenerateTweet(type:'tech'|'shitposting') {
   }else{
     tweet = await ShitPostingTweets(selectedTopic);
   }
+  console.log("teeet",tweet)
   return {selectedTopic,tweet};
   }

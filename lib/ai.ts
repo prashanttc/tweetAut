@@ -146,3 +146,96 @@ Style: Chill, modern, a bit ironic. Use casual punctuation. Max 1–2 emojis. No
 
   return tweet;
 }
+
+export async function MeaningfulThreadTweets(topic: string) {
+  const client = new OpenAI({
+    baseURL: "https://api.studio.nebius.com/v1/",
+    apiKey: process.env.NEBIUS_API_KEY!,
+  });
+
+  const prompt = `
+You are Tanishka — a clever, sharp Gen Z girl who writes Twitter threads with chill confidence. Your threads mix casual voice with genuine insight, like you're thinking out loud in real-time.
+
+Write a Twitter **thread of 4 to 6 tweets** on this topic: "${topic}"
+
+Rules:
+- Each tweet must be under 280 characters.
+- The first tweet should hook attention, like a teaser or casual hot take dont use user name in first tweet like "here's the tanishka's thread".
+- The middle tweets should expand the thought: real takes, small contradictions, and personal-style observations.
+- The last tweet should either conclude or drop a mic-line (no summaries, just vibes).
+- Style: casual, honest, slightly ironic. Not preachy, not fake deep. Feel like Tanishka is just tweeting from her bed.
+- Use casual punctuation. 1–2 emojis max across the whole thread. No hashtags. No list formatting. Don't use the dash (-) or quote ("") character anywhere.
+
+Return the full thread as a list of separate tweets.
+`;
+
+  const response = await withRetry(async () => {
+    const completion = await client.chat.completions.create({
+      model: "meta-llama/Meta-Llama-3.1-405B-Instruct",
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are a Gen Z girl who writes casually smart Twitter threads.",
+        },
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+      temperature: 0.9,
+      max_tokens: 600,
+    });
+
+    const raw = completion.choices?.[0]?.message?.content?.trim();
+    if (!raw) throw new Error("Nebius AI returned an empty thread.");
+
+    // Split by numbered bullets or line breaks — handles both styles
+    const tweets = raw
+      .split(/\n+/)
+      .map((line) => line.replace(/^\d+[\)\.]?\s*/, "").trim())
+      .filter((t) => t.length > 0 && t.length <= 280);
+
+    if (tweets.length < 3) throw new Error("Too short for a thread");
+
+    return tweets;
+  });
+
+  return response;
+}
+
+export async function PickSpicyTopic(): Promise<string> {
+  const client = new OpenAI({
+    baseURL: "https://api.studio.nebius.com/v1/",
+    apiKey: process.env.NEBIUS_API_KEY!,
+  });
+
+  const prompt = `
+You're a spicy, smart Gen Z girl who tweets about whatever is blowing your mind lately — social dynamics, weird trends, human behavior, the internet, double standards, girlbossing, emotional contradictions, etc.
+
+Give ONE thought-provoking or scroll-stopping topic that feels timely, weird, or kind of genius. Don't make it deep or dramatic, just something you'd love to unpack in a thread.
+
+Avoid clichés like "AI", "mental health", or "motivation". No hashtags, no quotes.
+`;
+
+  const topic = await withRetry(async () => {
+    const res = await client.chat.completions.create({
+      model: "meta-llama/Meta-Llama-3.1-405B-Instruct",
+      messages: [
+        {
+          role: "system",
+          content: "You are a spicy, clever Gen Z girl picking fire Twitter topics.",
+        },
+        { role: "user", content: prompt },
+      ],
+      temperature: 0.95,
+      max_tokens: 60,
+    });
+
+    const idea = res.choices?.[0]?.message?.content?.trim();
+    if (!idea) throw new Error("No topic generated.");
+    return idea;
+  });
+
+  return topic;
+}

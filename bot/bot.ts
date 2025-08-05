@@ -52,7 +52,7 @@ export function startTelegramBot() {
       const {selectedTopic,tweet} = await GenerateTweet("tech");
       userSessions.set(userId!, { type: "tech", tweet , selectedTopic });
 
-      bot.sendMessage(chatId, `💡 Tweet preview:\n\n"${tweet}"`, {
+      bot.sendMessage(chatId, `💡 Tweet preview:\n\n${tweet}`, {
         reply_markup: {
           inline_keyboard: [
             [
@@ -77,7 +77,7 @@ export function startTelegramBot() {
       const {selectedTopic,tweet} = await GenerateTweet("shitposting");
       userSessions.set(userId!, { type: "shitpost", tweet ,selectedTopic });
 
-      bot.sendMessage(chatId, `💩 Shitpost preview:\n\n"${tweet}"`, {
+      bot.sendMessage(chatId, `💩 Shitpost preview:\n\n${tweet}`, {
         reply_markup: {
           inline_keyboard: [
             [
@@ -97,7 +97,7 @@ export function startTelegramBot() {
     const chatId = msg.chat.id;
 
     try {
-      const logs = await prisma.tweets.findMany({
+      const logs = await prisma.tweet.findMany({
         orderBy: { createdAt: "desc" },
         take: 5,
       });

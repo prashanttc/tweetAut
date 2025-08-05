@@ -19,7 +19,7 @@ export async function sendEmailNotification(
         <p><em>Time:</em> ${new Date().toLocaleString()}</p>
       `,
     });
-    return true
+    return true ;
   } catch (err) {
     console.error("Failed to send email notification:");
   }
