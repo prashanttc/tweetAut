@@ -3,5 +3,4 @@ export interface Topic {
   source: string;
   sourceUrl?: string;
   contextSummary?: string;
-  personaAngle?: string;
 }

@@ -16,19 +16,13 @@ export async function ThreadAgent() {
       freshTopic = candidate;
       break;
     }
-    console.log(`🚫 Duplicate topic (${candidate}), retrying...`);
     retries++;
   }
 
   if (!freshTopic) {
-    console.log("❌ Could not find a fresh topic after retries.");
     return;
   }
-
-  console.log("🔥 New topic:", freshTopic);
-
   const tweets = await MeaningfulThreadTweets(freshTopic);
-  console.log("tweet", tweets);
   const post = await PostAgent({
     content: tweets,
     topic: {

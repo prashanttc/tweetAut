@@ -2,22 +2,32 @@
 import TelegramBot from "node-telegram-bot-api";
 import dotenv from "dotenv";
 import { prisma } from "../lib/prisma";
-import { GenerateTweet } from "../agents/telegramAgent";
+import { GenerateTweet, threadBot } from "../agents/telegramAgent";
 import { PostAgent } from "../agents/postAgent";
 import { Topic } from "../type";
+import { ThreadAgent } from "../agents/ThreadAgent";
 
 dotenv.config();
 
 export function startTelegramBot() {
   const token = process.env.TELEGRAM_BOT_TOKEN!;
   const bot = new TelegramBot(token, { polling: true });
-  const ADMIN_IDS = process.env.TELEGRAM_ADMIN_ID!.split(",").map((id) => id.trim());
+  const ADMIN_IDS = process.env
+    .TELEGRAM_ADMIN_ID!.split(",")
+    .map((id) => id.trim());
 
   function isAdmin(id: number | undefined): boolean {
     return id !== undefined && ADMIN_IDS.includes(id.toString());
   }
 
-  const userSessions = new Map<number, { type: "tech" | "shitpost"; tweet: string; selectedTopic:Topic }>();
+  const userSessions = new Map<
+    number,
+    {
+      type: "tech" | "shitpost" | "thread";
+      tweet: string | string[];
+      selectedTopic: Topic;
+    }
+  >();
 
   console.log("🤖 Telegram bot started");
 
@@ -37,7 +47,7 @@ export function startTelegramBot() {
     if (!isAdmin(msg.from?.id)) return;
     bot.sendMessage(
       msg.chat.id,
-      `📚 *Bot Commands Reference*:\n\n🛠️ *Tweet :*\n• /posttech – Post tech tweet manually\n• /postshit – Post shitpost manually\n\n🔍• /logs – See recent posted tweets\n• /start – Overview of what I do\n• /help – Show this help menu\n\n🔐 *Note:* Only the authorized admin can use these commands.`,
+      `📚 *Bot Commands Reference*:\n\n🛠️ *Tweet :*\n• /posttech – Post tech tweet manually\n\n• /postthread – Post thread tweet manually\n• /postshit – Post shitpost manually\n\n🔍• /logs – See recent posted tweets\n• /start – Overview of what I do\n• /help – Show this help menu\n\n🔐 *Note:* Only the authorized admin can use these commands.`,
       { parse_mode: "Markdown" }
     );
   });
@@ -49,8 +59,8 @@ export function startTelegramBot() {
 
     bot.sendMessage(chatId, `🧠 Generating tech tweet...`);
     try {
-      const {selectedTopic,tweet} = await GenerateTweet("tech");
-      userSessions.set(userId!, { type: "tech", tweet , selectedTopic });
+      const { selectedTopic, tweet } = await GenerateTweet("tech");
+      userSessions.set(userId!, { type: "tech", tweet, selectedTopic });
 
       bot.sendMessage(chatId, `💡 Tweet preview:\n\n${tweet}`, {
         reply_markup: {
@@ -74,10 +84,38 @@ export function startTelegramBot() {
 
     bot.sendMessage(chatId, `🧠 Generating shitpost...`);
     try {
-      const {selectedTopic,tweet} = await GenerateTweet("shitposting");
-      userSessions.set(userId!, { type: "shitpost", tweet ,selectedTopic });
+      const { selectedTopic, tweet } = await GenerateTweet("shitposting");
+      userSessions.set(userId!, { type: "shitpost", tweet, selectedTopic });
 
       bot.sendMessage(chatId, `💩 Shitpost preview:\n\n${tweet}`, {
+        reply_markup: {
+          inline_keyboard: [
+            [
+              { text: "✅ Post", callback_data: "post_tweet" },
+              { text: "🔁 Regenerate", callback_data: "regen_tweet" },
+            ],
+          ],
+        },
+      });
+    } catch (err: any) {
+      bot.sendMessage(chatId, `❌ Error: ${err.message}`);
+    }
+  });
+  bot.onText(/\/postthread/, async (msg) => {
+    const chatId = msg.chat.id;
+    const userId = msg.from?.id;
+    if (!isAdmin(userId)) return;
+
+    bot.sendMessage(chatId, `🧠 Generating thread...`);
+    try {
+      const { topic, tweets } = await threadBot();
+      userSessions.set(userId!, {
+        type: "thread",
+        tweet: tweets,
+        selectedTopic: topic,
+      });
+
+      bot.sendMessage(chatId, ` thread preview:\n\n${tweets}`, {
         reply_markup: {
           inline_keyboard: [
             [
@@ -128,13 +166,19 @@ export function startTelegramBot() {
     if (!isAdmin(userId) || !chatId) return;
     const session = userSessions.get(userId);
     if (!session) {
-      bot.sendMessage(chatId, "⚠️ No tweet found. Start again with /posttech or /postshit.");
+      bot.sendMessage(
+        chatId,
+        "⚠️ No tweet found. Start again with /posttech or /postshit."
+      );
       return;
     }
 
     if (action === "post_tweet") {
       try {
-       await PostAgent({content:session.tweet,topic:session.selectedTopic})
+        await PostAgent({
+          content: session.tweet,
+          topic: session.selectedTopic,
+        });
         bot.sendMessage(chatId, `✅ Tweet posted!`);
       } catch (err: any) {
         bot.sendMessage(chatId, `❌ Posting failed: ${err.message}`);
@@ -144,8 +188,31 @@ export function startTelegramBot() {
 
     if (action === "regen_tweet") {
       try {
-        const {selectedTopic,tweet} = await GenerateTweet(session.type === "tech" ? "tech" : "shitposting");
-        userSessions.set(userId, { type: session.type,tweet,selectedTopic });
+        if (session.type === "thread") {
+          const { tweets, topic } = await threadBot();
+          userSessions.set(userId, {
+            type: "thread",
+            tweet: tweets,
+            selectedTopic: topic,
+          });
+          bot.editMessageText(`🧠 Thread regenerated:\n\n${tweets}`, {
+            chat_id: chatId,
+            message_id: callbackQuery.message?.message_id,
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  { text: "✅ Post", callback_data: "post_tweet" },
+                  { text: "🔁 Regenerate", callback_data: "regen_tweet" },
+                ],
+              ],
+            },
+          });
+          return;
+        }
+        const { selectedTopic, tweet } = await GenerateTweet(
+          session.type === "tech" ? "tech" : "shitposting"
+        );
+        userSessions.set(userId, { type: session.type, tweet, selectedTopic });
 
         bot.editMessageText(
           `${session.type === "tech" ? "💡 New tech tweet" : "💩 New shitpost"} preview:\n\n"${tweet}"`,
